@@ -25,6 +25,8 @@ resource "aws_subnet" "vpc_subnets" {
     cidr_block = each.value
     tags = {
         Name = "subnet-${ index(var.vpc_subnet_cidr, each.value) }"
+        # val = each.value
+        # key = each.key (same as each.value)
     }
 }
 
