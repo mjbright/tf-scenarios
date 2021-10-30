@@ -9,7 +9,7 @@ resource "local_file" "foo" {
     for_each  = toset(var.opfiles)
 
     # Note: key is same as value:
-    content  = "File[${each.key}]: Content for ${each.value}\n"
+    content  = "File[${each.key}]: ${each.value}\n"
     filename = "${path.module}/files/${each.value}"
 }
 
