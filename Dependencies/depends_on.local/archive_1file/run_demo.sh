@@ -10,6 +10,10 @@ RUN() {
         diff) eval $* | sed 's/^/        /' ;;
         *)    eval $* ;;
     esac
+}
+
+PRESS() {
+    [ ! -z "$1" ] && echo $*
     echo "Press <enter>"
     read DUMMY
     [ "$DUMMY" = "q" ] && exit 0
