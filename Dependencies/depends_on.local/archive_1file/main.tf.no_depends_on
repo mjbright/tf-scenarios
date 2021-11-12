@@ -1,0 +1,18 @@
+
+resource "local_file" "file1" {
+    content     = "File1 contents !"
+    filename = "${path.module}/files/test.txt"
+}
+
+data "archive_file" "archive" {
+  type        = "zip"
+
+  # No depends / No implicit dependency
+  # NOTE: Terraform will not interpret the string ...
+  source_file = "${path.module}/files/test.txt"
+
+  output_path = "${path.module}/files/archive.zip"
+}
+
+
+
