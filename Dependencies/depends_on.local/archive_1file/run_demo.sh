@@ -67,40 +67,50 @@ INIT
 
 ## Implicit_dependency
 
-RM_FILES
-echo; echo "======== Running 'implicit_dependency' test ========"
-RUN cat main.tf.implicit_dependency
-RUN cp -a main.tf.implicit_dependency main.tf
+START_AFRESH
 
-echo; echo "---- Applying 'implicit_dependency' config"
+echo; echo "-- Example main.tf.* files"
+ls -altr main.tf.*
+
+echo; echo "======== Running 'implicit_dependency' test ========"
+RUN cp -a main.tf.implicit_dependency main.tf
+grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
+RUN cat main.tf.implicit_dependency
+
+echo; echo "---- Applying 'implicit_dependency' config" | grep Applying
 APPLY
+PRESS
 
 MODIFY_MAIN_TF "[implicit_dependency] Modified content for file1"
 REAPPLY
 
 ## No depends_on
 
-RM_FILES
 echo; echo "======== Running 'WITHOUT depends_on' test ========"
 
-RUN cat main.tf.no_depends_on
 RUN cp -a main.tf.no_depends_on main.tf
+grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
+RUN cat main.tf.no_depends_on
+RUN diff main.tf.no_depends_on main.tf.implicit_dependency
 
-echo; echo "---- Applying 'no_depends_on' config"
+START_AFRESH
+echo; echo "---- Applying 'no_depends_on' config" | grep Applying
 APPLY
+PRESS
 
 MODIFY_MAIN_TF "[no_depends] Modified content for file1"
 REAPPLY
 
 ## With depends_on
 
-RM_FILES
 echo; echo "======== Running 'depends_on' test ========"
+START_AFRESH
 
 RUN cat main.tf.depends_on
 RUN cp -a main.tf.depends_on main.tf
+RUN diff main.tf main.tf.no_depends_on
 
-echo; echo "---- Applying 'depends_on' config"
+echo; echo "---- Applying 'depends_on' config" | grep Applying
 APPLY
 
 MODIFY_MAIN_TF "[depends] Modified content for file1"
