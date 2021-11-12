@@ -38,9 +38,15 @@ INIT() {
         RUN terraform init
 }
 
-RM_FILES() {
-    [ -d files/ ] &&
-        RUN rm -rf files/
+START_AFRESH() {
+    # echo; echo "Cleaning up"
+    [ ! -d files/ ] && {
+        echo; echo "-- No files/ directory present"
+        return
+    }
+
+    RUN rm -rf files/
+    [ -f terraform.tfstate ] && RUN mv terraform.tfstate terraform.tfstate.backup
 }
 
 APPLY() {
