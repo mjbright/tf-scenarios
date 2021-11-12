@@ -4,10 +4,10 @@ resource "local_file" "file1" {
     filename = "${path.module}/files/test.txt"
 }
 
-data "archive_file" "init" {
+data "archive_file" "archive" {
   type        = "zip"
   source_file = local_file.file1.filename
-  output_path = "${path.module}/files/init.zip"
+  output_path = "${path.module}/files/archive.zip"
 
   depends_on = [ local_file.file1 ]
 }
