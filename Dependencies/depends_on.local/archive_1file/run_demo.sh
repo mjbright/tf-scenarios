@@ -97,11 +97,14 @@ RUN diff main.tf.no_depends_on main.tf.implicit_dependency
 
 START_AFRESH
 echo; echo "---- Applying 'no_depends_on' config" | grep Applying
+
+## APPLY will fail because it doesn't know to create file resource before creating zip:
 APPLY
 PRESS
 
-MODIFY_MAIN_TF "[no_depends] Modified content for file1"
-REAPPLY
+## COMMENT because APPLY will have failed:
+## MODIFY_MAIN_TF "[no_depends] Modified content for file1"
+## REAPPLY
 
 ## With depends_on
 
