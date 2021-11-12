@@ -62,6 +62,28 @@ PRESS() {
     [ "$DUMMY" = "Q" ] && exit 0
 }
 
+HCAT() {
+    MATCH="$1"; shift
+    FILE="$1"; shift
+
+    #echo -e "${_red}TEST${_norm} <<== RED"
+    cat $FILE | sed \
+       -e "s/^/        /" \
+       -e "s,${MATCH},"'\x1B[33m&\x1B[0m,'
+       #-e "s,${MATCH},"'\x1B[31m&\x1B[0m,'
+       #-e "s/localhost/${_red}XX&XX${_norm}/g"
+       #-e "s/localhost/${_red}XX&XX${_norm}/g"
+       #-e 's/localhost/'"${_red}"XX'&'XX"${_norm}"'/g'
+       #-e 's/localhost/'"${_red}"'&'"${_norm}"'/g'
+       #-e "s/localhost/${red}XXlocalhost${normal}/"
+       #-e "s/localhost/${red}\1${normal}/"
+       #-e "s/\($MATCH\)/${red}\1${normal}/"
+}
+
+#echo hello | sed -e 's,.*,\x1B[31m&\x1B[0m,'
+#HCAT "localhost" /etc/hosts
+#exit
+
 MODIFY_MAIN_TF() {
     NEW_CONTENT=$*
 
