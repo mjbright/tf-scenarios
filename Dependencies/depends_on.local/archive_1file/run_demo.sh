@@ -38,6 +38,16 @@ RUN() {
     PRESS "-- $*"
 
     case "$1" in
+        unzip)
+	    if [ "$2" = "-p" ]; then
+		eval $* | sed \
+		    -e 's/^/        /'  \
+                    -e "s,.*,"'\x1B[33m&\x1B[0m,'
+	    else
+		eval $* | sed 's/^/        /'
+	    fi
+	    ;;
+        ls)   eval $* | sed 's/^/        /' ;;
         cat)  eval $* | sed 's/^/        /' ;;
         diff) eval $* | sed 's/^/        /' ;;
         *)    eval $* ;;
@@ -106,26 +116,29 @@ START_AFRESH
 echo; echo "-- Example main.tf.* files"
 ls -altr main.tf.*
 
-echo; echo "======== Running 'implicit_dependency' test ========"
+echo; green "================ Running 'implicit_dependency' test ================"; echo
 RUN cp -a main.tf.implicit_dependency main.tf
-grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
-RUN cat main.tf.implicit_dependency
+#grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
+#RUN cat main.tf.implicit_dependency
+HCAT "source_file.*" main.tf.implicit_dependency
 
 echo; echo "---- Applying 'implicit_dependency' config" | grep Applying
 APPLY
-PRESS
 
+PRESS
 MODIFY_MAIN_TF "[implicit_dependency] Modified content for file1"
 REAPPLY
+PRESS
 
 ## No depends_on
 
-echo; echo "======== Running 'WITHOUT depends_on' test ========"
+echo; green "================ Running 'WITHOUT depends_on' test ================"; echo
 
 RUN cp -a main.tf.no_depends_on main.tf
-grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
-RUN cat main.tf.no_depends_on
-RUN diff main.tf.no_depends_on main.tf.implicit_dependency
+#grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
+#RUN cat main.tf.no_depends_on
+HCAT "source_file.*" main.tf.no_depends_on
+#RUN diff main.tf.no_depends_on main.tf.implicit_dependency
 
 START_AFRESH
 echo; echo "---- Applying 'no_depends_on' config" | grep Applying
@@ -140,16 +153,19 @@ PRESS
 
 ## With depends_on
 
-echo; echo "======== Running 'depends_on' test ========"
+echo; green "================ Running 'depends_on' test ================"; echo
 START_AFRESH
 
-RUN cat main.tf.depends_on
 RUN cp -a main.tf.depends_on main.tf
-RUN diff main.tf main.tf.no_depends_on
+#grep --color=ALWAYS depends_on main.tf | sed 's/^/        /'
+#RUN cat main.tf.depends_on
+HCAT "depends_on.*=" main.tf.depends_on
+#RUN diff main.tf main.tf.no_depends_on
 
 echo; echo "---- Applying 'depends_on' config" | grep Applying
 APPLY
 
+PRESS
 MODIFY_MAIN_TF "[depends] Modified content for file1"
 REAPPLY
 
