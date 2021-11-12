@@ -18,8 +18,6 @@ PRESS() {
     read DUMMY
     [ "$DUMMY" = "q" ] && exit 0
     [ "$DUMMY" = "Q" ] && exit 0
-
-    eval $*
 }
 
 MODIFY_MAIN_TF() {
