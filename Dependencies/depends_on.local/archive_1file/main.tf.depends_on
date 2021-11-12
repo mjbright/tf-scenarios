@@ -1,6 +1,5 @@
-
 resource "local_file" "file1" {
-    content     = "File1 contents !"
+    content="File1 contents !"
     filename = "${path.module}/files/test.txt"
 }
 
@@ -11,6 +10,3 @@ data "archive_file" "archive" {
 
   depends_on = [ local_file.file1 ]
 }
-
-
-
