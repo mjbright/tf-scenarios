@@ -3,7 +3,13 @@
 cd $(dirname $0)
 
 RUN() {
-    echo "-- $*"
+    PRESS "-- $*"
+
+    case "$1" in
+        cat)  eval $* | sed 's/^/        /' ;;
+        diff) eval $* | sed 's/^/        /' ;;
+        *)    eval $* ;;
+    esac
     echo "Press <enter>"
     read DUMMY
     [ "$DUMMY" = "q" ] && exit 0
