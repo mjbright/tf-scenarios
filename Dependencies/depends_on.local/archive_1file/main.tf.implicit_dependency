@@ -6,10 +6,11 @@ resource "local_file" "file1" {
 
 data "archive_file" "archive" {
   type        = "zip"
-  source_file = local_file.file1.filename
-  output_path = "${path.module}/files/archive.zip"
 
-  depends_on = [ local_file.file1 ]
+  # Implicit dependency:
+  source_file = local_file.file1.filename
+
+  output_path = "${path.module}/files/archive.zip"
 }
 
 
