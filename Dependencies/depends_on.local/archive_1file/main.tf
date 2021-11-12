@@ -6,7 +6,7 @@ resource "local_file" "file1" {
 
 data "archive_file" "init" {
   type        = "zip"
-  source_file = "${path.module}/files/test.txt"
+  source_file = local_file.file1.filename
   output_path = "${path.module}/files/init.zip"
 
   depends_on = [ local_file.file1 ]
