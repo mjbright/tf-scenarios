@@ -88,12 +88,12 @@ MODIFY_MAIN_TF() {
     NEW_CONTENT=$*
 
     echo; echo "---- Modifying content of the local_file.file1 resource in main.tf"
-    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/BEFORE:        /'
+    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/    BEFORE:        /'
     #set -x
     sed -i "s/^  *content.*/    content=\"$NEW_CONTENT\"/" main.tf
     #set +x
-    echo '-- grep --color=ALWAYS " content=" main.tf'
-    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/AFTER:         /'
+    #echo '-- grep --color=ALWAYS " content=" main.tf'
+    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/    AFTER:         /'
     PRESS ""
 }
 
