@@ -50,11 +50,13 @@ START_AFRESH() {
 }
 
 APPLY() {
+    #ls -altr terraform.tfstate*
     RUN terraform apply
     RUN ls -ltr files/
 }
 
 REAPPLY() {
+    #ls -altr terraform.tfstate*
     RUN terraform apply
     RUN ls -ltr files/
     RUN unzip -l files/archive.zip
