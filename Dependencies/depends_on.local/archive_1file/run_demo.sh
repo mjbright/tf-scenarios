@@ -71,13 +71,9 @@ HCAT() {
        -e "s/^/        /" \
        -e "s,${MATCH},"'\x1B[33m&\x1B[0m,'
        #-e "s,${MATCH},"'\x1B[31m&\x1B[0m,'
-       #-e "s/localhost/${_red}XX&XX${_norm}/g"
-       #-e "s/localhost/${_red}XX&XX${_norm}/g"
-       #-e 's/localhost/'"${_red}"XX'&'XX"${_norm}"'/g'
        #-e 's/localhost/'"${_red}"'&'"${_norm}"'/g'
        #-e "s/localhost/${red}XXlocalhost${normal}/"
        #-e "s/localhost/${red}\1${normal}/"
-       #-e "s/\($MATCH\)/${red}\1${normal}/"
 }
 
 #echo hello | sed -e 's,.*,\x1B[31m&\x1B[0m,'
@@ -140,8 +136,6 @@ ls -altr main.tf.*
 
 echo; green "================ Running 'implicit_dependency' test ================"; echo
 RUN cp -a main.tf.implicit_dependency main.tf
-#grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
-#RUN cat main.tf.implicit_dependency
 HCAT "source_file.*" main.tf.implicit_dependency
 
 echo; echo "---- Applying 'implicit_dependency' config" | grep Applying
@@ -157,8 +151,6 @@ PRESS
 echo; green "================ Running 'WITHOUT depends_on' test ================"; echo
 
 RUN cp -a main.tf.no_depends_on main.tf
-#grep --color=ALWAYS source_file.* main.tf | sed 's/^/        /'
-#RUN cat main.tf.no_depends_on
 HCAT "source_file.*" main.tf.no_depends_on
 #RUN diff main.tf.no_depends_on main.tf.implicit_dependency
 
@@ -179,8 +171,6 @@ echo; green "================ Running 'depends_on' test ================"; echo
 START_AFRESH
 
 RUN cp -a main.tf.depends_on main.tf
-#grep --color=ALWAYS depends_on main.tf | sed 's/^/        /'
-#RUN cat main.tf.depends_on
 HCAT "depends_on.*=" main.tf.depends_on
 #RUN diff main.tf main.tf.no_depends_on
 
