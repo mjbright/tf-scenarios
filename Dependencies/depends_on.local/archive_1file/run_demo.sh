@@ -24,15 +24,13 @@ MODIFY_MAIN_TF() {
     NEW_CONTENT=$*
 
     echo; echo "---- Modifying content of the local_file.file1 resource in main.tf"
-    set -x
+    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/BEFORE:        /'
+    #set -x
     sed -i "s/^  *content.*/    content=\"$NEW_CONTENT\"/" main.tf
-    set +x
-    #sed -i 's/^  *content.*/    content="'$NEW_CONTENT'"/' main.tf
-    #sed -i 's/^  *content.*/    content="Modified content for file1 !!"/' main.tf
-    RUN grep " content=" main.tf
-    #RUN terraform apply
-    #RUN ls -ltr files/
-    #RUN unzip -l files/archive.zip
+    #set +x
+    echo '-- grep --color=ALWAYS " content=" main.tf'
+    grep --color=ALWAYS " content.*=" main.tf | sed 's/^/AFTER:         /'
+    PRESS ""
 }
 
 INIT() {
