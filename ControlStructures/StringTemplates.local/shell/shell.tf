@@ -1,5 +1,7 @@
 
 locals {
+  # NOTE: Use of $${VAR} in template to have ${VAR} in resulting shell script
+
   shell_script = templatefile("${path.module}/templates/run_me.sh.tpl", {
     NUM=10,
     MESSAGE="Hello world",
