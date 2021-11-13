@@ -12,3 +12,8 @@ output ssh_config {
     value = local.ssh_config
 }
 
+resource "local_file" "ssh_config" {
+    content  = local.ssh_config
+    filename = "${path.module}/ssh_config"
+}
+

@@ -3,5 +3,6 @@ Host ${node}
     Hostname    ${node_ips[index]}
     User              ${user}
     IdentityFile  ${key_file}
+
 %{ endfor ~}
 
