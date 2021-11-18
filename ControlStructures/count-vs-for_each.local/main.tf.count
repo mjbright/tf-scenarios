@@ -5,6 +5,9 @@ variable opfiles {
 
     # Will delete files 3 & 4, then recreate 4:
     #default = [ "file1.txt", "file2.txt", "file4.txt" ]
+
+    # Will delete files 3 & 4, then recreate 3 & 4: just because of change in ordering ...
+    #default = [ "file1.txt", "file2.txt", "file4.txt", "file3.txt" ]
 }
 
 # Using local_file in-built Provider for light weight example

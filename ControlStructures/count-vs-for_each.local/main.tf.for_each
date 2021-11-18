@@ -7,6 +7,9 @@ variable opfiles {
 
     # Will delete file3.txt ONLY:
     #default = [ "file1.txt", "file2.txt", "file4.txt" ]
+
+    # No change - despite change in ordering ..
+    #default = [ "file1.txt", "file2.txt", "file4.txt", "file3.txt" ]
 }
 
 # Using local_file in-built Provider for light weight example
