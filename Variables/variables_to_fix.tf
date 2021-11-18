@@ -49,8 +49,4 @@ variable t9 {
     default = 10 / 10
 }
 
-variable t10 {
-    type = X
-    default = { "a": "hello", "b": { "a": "hello", "b": 1 }, "c": "bye" }
-}
 
