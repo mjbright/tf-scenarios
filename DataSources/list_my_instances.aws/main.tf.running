@@ -1,0 +1,27 @@
+
+# Separate stopped/running configurations as empty result from data source produces an error, see:
+# - https://github.com/hashicorp/terraform/issues/16380
+
+provider aws { region = var.region }
+
+variable region { default = "us-west-1" }
+
+data "aws_instances" "running" {
+  filter {
+    name   = "instance-type"
+    values = ["*"]
+  }
+  instance_state_names = ["running"]
+}
+
+output running_list {
+  value = data.aws_instances.running
+}
+
+output running {
+  value = [ for index, instance in data.aws_instances.running.ids: "${instance}: ${data.aws_instances.running.public_ips[index]}" ]
+}
+
+
+
+
