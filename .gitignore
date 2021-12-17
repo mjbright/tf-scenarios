@@ -2,4 +2,11 @@ files/
 terraform.tfstate*
 .terraform*
 *.bak
+**/plan.out
+**/*.tf.*
+**/files/
+EXCLUDE/
 
+Solutions/lab2/main.tf
+DataSources/list_my_images_details.aws/setup.rc
+lab.Solutions.tointegrate/
