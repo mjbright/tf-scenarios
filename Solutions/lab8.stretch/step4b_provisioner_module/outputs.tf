@@ -1,5 +1,5 @@
 
-output "zMACHINES" {
+output "VM_info" {
   value = [ for index, example in module.instances2.instances.* : format("%s%s", "\n    ", join( "\n    ", [
     "================ Machine ${index} details: ================",
     "AMI        :\t${example.ami}",
