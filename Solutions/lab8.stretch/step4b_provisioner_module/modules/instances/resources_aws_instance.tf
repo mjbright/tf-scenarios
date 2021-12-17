@@ -63,7 +63,7 @@ EOF
   key_name      = aws_key_pair.generated_key.key_name
 
   tags = {
-    LabName = "provisioners - step 3"
+    LabName = "provisioners - step 4b"
   }
 }
 
