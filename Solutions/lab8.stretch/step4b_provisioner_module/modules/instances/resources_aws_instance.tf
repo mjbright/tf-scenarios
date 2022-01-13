@@ -9,7 +9,7 @@ locals {
 
 resource "aws_instance" "example" {
   instance_type = "t2.micro"
-  count = 2
+  count = var.num_instances
 
   ami           = data.aws_ami.latest_ubuntu_lts_1804.id
   # Don't auto-recreate instance if new ami available:
