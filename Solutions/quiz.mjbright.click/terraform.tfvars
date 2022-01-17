@@ -14,8 +14,12 @@ egress_ports = {
 
 # DNS Domain info:
 domain             = "YOUR-DOMAIN.NET"
-zone_id            = "/hostedzone/YOUR-DOMAIN-ID"
+host               = "quiz"
+zone_id            = ""
 
 # user data:
 user_data_filepath = "user_data_setup.sh"
+
+# remote_exec/file provisioners:
+provisioner_templatefile = ""
 

@@ -24,16 +24,29 @@ variable egress_ports {
 }
 
 variable domain {
-  description = "DNS domain name"
+  description = "DNS domain name of form 'mycompany.com' without trailing '.'"
+  type        = string
+}
+
+variable host {
+  description = "DNS host name to use within the domain"
   type        = string
 }
 
 variable zone_id {
-  description = "DNS zone_id"
+  description = "DNS zone_id: optional parameter"
   type        = string
+  default     = ""
 }
 
 variable user_data_filepath {
   description = "Optional path to user_data for VM provisioning"
   type        = string
 }
+
+variable provisioner_templatefile {
+  description = "Optional path to provisioner_templatefile for file cp, then execution"
+  type        = string
+}
+
+

@@ -13,7 +13,12 @@ An example combining several features which we've seen.
 
 + This example also includes the creation of Route53 (AWS DNS) records for the created instance(s)
 
-Note: Currently this repo does not include
+**Note:** The instances module itself has been moved to github.com/mjbright/terraform-modules
+- the main.tf provides examples of how we can refer to a git repo by
+  - optionally specifying a sub-directory of the repo
+  - optionally specifying a tag or sha256 reference of the repo to get a specific module version
+
+**Note:** Currently this repo does not include
 - the mjbright.click domain zone_id - you must provide your own Route53 controlled domain
 - the quiz application
   - the app is available at https://github.com/mjbright/quiz but lacks the quiz content
