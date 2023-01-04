@@ -1,0 +1,58 @@
+
+---
+- hosts: all
+  become: false
+  vars_files:
+    - vars.yaml
+    - ../var/ansible_vars.yaml
+
+  tasks:
+
+  - ansible.builtin.debug: msg="================ STARTED worker_playbook.yml ===================="
+
+  - name: Install Kubernetes
+    become_user: ubuntu
+    ansible.builtin.shell: |
+      echo "----[worker]-- Installing Kubernetes pagkages & Container Engine:"
+      /home/student/scripts/k8s-installer.sh -w 2>&1 | tee /tmp/k8s-installer.sh.log
+    ignore_errors: true
+
+  - ansible.builtin.debug: msg="================ [worker] WAITING for Join Command ===================="
+
+  - name: Install Kubernetes - waiting for join.sh
+    become_user: ubuntu
+    ansible.builtin.shell: |
+      echo "----[worker]-- Waiting for /tmp/join.sh from cp node:"
+      while [ ! -f /tmp/join.sh ]; do sleep 5; done
+    ignore_errors: true
+
+  - ansible.builtin.debug: msg="================ [worker] RUNNING Join Command ===================="
+
+  - name: Install Kubernetes - joining cluster
+    become_user: ubuntu
+    ansible.builtin.shell: |
+      echo "----[worker]-- Joining cluster:"
+      sudo sh -x /tmp/join.sh
+    ignore_errors: true
+
+  - ansible.builtin.debug: msg="================ [worker] RUNNING Join Command ===================="
+
+  - name: Install Kubernetes - checking
+    become_user: ubuntu
+    ansible.builtin.shell: |
+      echo "----[worker]-- Waiting to check cluster Nodes:"
+      sleep 10
+      sudo -u student -c "ssh cp kubectl get no"
+      exit 0
+    ignore_errors: true
+    register: op
+
+  - name: Note Kubernetes complete on WORKER node
+    become: false
+    ansible.builtin.shell: "echo Completed WORKER playbook | tee /tmp/WORKER.txt"
+    ignore_errors: true
+
+  - ansible.builtin.debug: msg="RC={{ op.rc }} STDOUT={{ op.stdout }} STDERR={{ op.stderr }}"
+
+  - ansible.builtin.debug: msg="================ ENDED worker_playbook.yml ===================="
+

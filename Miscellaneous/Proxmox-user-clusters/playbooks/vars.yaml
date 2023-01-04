@@ -1,0 +1,8 @@
+---
+admin_users:    ['mjb''student']
+
+users:          []
+
+disable_logins: ['ubuntu','vagrant']
+
+

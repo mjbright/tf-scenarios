@@ -1,0 +1,57 @@
+
+---
+- hosts: all
+  become: false
+  vars_files:
+    - vars.yaml
+    - ../var/ansible_vars.yaml
+
+  tasks:
+
+  - ansible.builtin.debug: msg="================ STARTED cp_playbook.yml ===================="
+
+  - name: Install Kubernetes
+    become_user: ubuntu
+    ansible.builtin.shell: |
+        echo "----[cp]-- Installing Kubernetes pagkages & Container Engine:"
+        sudo chmod -R a+rx /home/student/scripts/
+        /home/student/scripts/k8s-installer.sh -CP 2>&1 | tee /tmp/k8s-installer.sh.log
+
+        echo "----[cp]-- Saving 'kubeadm join' command:"
+        grep -A 1 -m 1 "kubeadm join" kubeadm.init.op | tail -2 >/tmp/join.sh
+        
+        echo "----[cp]-- Checking single-node cluster:"
+        kubectl get no
+    #ignore_errors: true
+
+  - ansible.builtin.debug: msg="================ [cp] COPYING Join Command ===================="
+
+  - name: Install Kubernetes - copying join command to worker
+    become_user: ubuntu
+    ansible.builtin.shell: |
+        scp /tmp/join.sh worker:/tmp/join.sh
+        grep worker2 .ssh/config && scp /tmp/join.sh worker2:/tmp/join.sh
+        grep worker3 .ssh/config && scp /tmp/join.sh worker3:/tmp/join.sh
+        # TODO: grep cp2     .ssh/config && scp /tmp/join.sh worker2:/tmp/join.sh
+
+        echo "----[cp]-- Copying .kube/config to /home/student:"
+        sudo mkdir -p /home/student/.kube
+        sudo cp -a /home/ubuntu/.kube/config /home/student/.kube/
+        sudo chown -R student:student /home/student/.kube/
+
+        echo "----[cp]-- Checking kubectl get nodes as 'student':"
+        sudo -u student kubectl get nodes
+        exit 0
+    ignore_errors: true
+    register: op
+
+  - name: Note Kubernetes complete on CP node
+    become: false
+    ansible.builtin.shell: "echo Completed CP playbook | tee /tmp/CP.txt"
+    ignore_errors: true
+                      
+  - ansible.builtin.debug: msg="RC={{ op.rc }} STDOUT={{ op.stdout }} STDERR={{ op.stderr }}"
+
+  - ansible.builtin.debug: msg="================ ENDED cp_playbook.yml ===================="
+
+

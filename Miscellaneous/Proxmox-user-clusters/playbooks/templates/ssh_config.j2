@@ -1,0 +1,29 @@
+#jinja2:lstrip_blocks: True
+
+{% for user in vars.admin_users %}
+  {% for host in groups['all'] %}
+{# Host {{ host }}-{{ loop.index }} #}
+Host {{ host }}-{{ user }}
+  User                 {{ user }}
+  IdentityFile         {{ ssh_key_admin }}
+  {# Hostname             {{ hostvars[host]['inventory_hostname'] }} #}
+  Hostname             {{ host_ips[host] }}
+  ServerAliveInterval  120
+  
+{% endfor %}
+{% endfor %}
+
+{% for user in vars.users %}
+  {% for host in groups['all'] %}
+{# Host {{ host }}-{{ loop.index }} #}
+Host {{ host }}-{{ user }}
+  User                 {{ user }}
+  IdentityFile         {{ ssh_key_users }}
+  {# Hostname             {{ hostvars[host]['inventory_hostname'] }} #}
+  Hostname             {{ host_ips[host] }}
+  ServerAliveInterval  120
+
+{% endfor %}
+{% endfor %}
+
+

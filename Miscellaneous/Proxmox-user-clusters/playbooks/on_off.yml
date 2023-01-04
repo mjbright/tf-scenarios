@@ -1,0 +1,20 @@
+
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars.yaml
+    - ../var/ansible_vars.yaml
+
+  tasks:
+  - name: Shutdown if node_state variable == "off"
+    shell: |
+      # var.node_state ??
+      if [ "{{ node_state }}" = "off" ]; then
+          echo "{{ node_state }}: Shutting down node $(hostname)"
+          sudo shutdown -h 0
+          exit 0
+      fi
+      echo "{{ node_state }}: Keeping node up $(hostname)"
+    ignore_errors: true
+

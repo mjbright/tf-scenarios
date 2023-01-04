@@ -1,0 +1,113 @@
+# TODO:
+# - add variables
+# - add admin account (user var: e.g. user=mjb)
+# - then disable vagrant login
+# - enable sudo for admin account
+# - check/disable root login
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars.yaml
+    - ../var/ansible_vars.yaml
+
+  tasks:
+
+  - ansible.builtin.debug: msg="================ Start playbook.yml ===================="
+
+  - name: Install packages
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+      lock_timeout: 1200
+    vars:
+      packages:
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+
+  - name: Create admin users
+    ansible.builtin.user:
+      name: "{{ item }}"
+      state: present
+      groups: "sudo"
+      shell:  "/bin/bash"
+    loop: '{{ vars.admin_users }}'
+
+  - name: Install ssh pub key for admin users
+    ansible.posix.authorized_key:
+      user: "{{ item[0] }}"
+      key: "{{ lookup('file', item[1] + '.pub') }}"
+      state: present
+    with_nested:
+    - '{{ vars.admin_users }}'
+    - '{{ vars.ssh_key_admin }}'
+
+  - name: Enable password-less sudo for admin users
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%sudo'
+      line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+
+  - name: Create normal users
+    ansible.builtin.user:
+      name: "{{ item }}"
+      state: present
+      groups: "users"
+      shell:  "/bin/bash"
+    loop: '{{ vars.users }}'
+
+  - name: Create dir '~/.ssh/' if it does not exist for all normal users
+    #become:     false
+    #connection: local
+    ansible.builtin.file:
+      path:  "/home/{{ item }}/.ssh/"
+      state: directory
+      mode: '0755'
+    loop: '{{ vars.users }}'
+
+  ## - name: Create cluster ssh_config
+    ## #become:     false
+    ## #connection: local
+    ## ansible.builtin.copy:
+      ## src:      '.{{ vars.cluster_ssh_config }}' # ../var/config
+      ## dest:      "/home/{{ item }}/.ssh/config"
+      ## mode:     0644 
+      ## backup:   yes
+    ## loop: '{{ vars.users }}'
+
+  - name: Install ssh pub key for normal users
+    ansible.posix.authorized_key:
+      user: "{{ item[0] }}"
+      key: "{{ lookup('file', item[1] + '.pub') }}"
+      state: present
+    with_nested:
+    - '{{ vars.users }}'
+    - '{{ vars.ssh_key_users }}'
+
+  - name: "TASK_DISABLED: Disable login for 'standard' users (ubuntu, vagrant, root)"
+    # Disable for now ...
+    ansible.builtin.user:
+      name: "{{ item }}"
+      state: present
+      password_lock: true
+      shell: "/sbin/nologin"
+    #loop: "{{ ['ubuntu', 'vagrant', 'root'] }}"
+    loop: "{{ ['ubuntu', 'root'] }}"
+    when: 0 > 1
+
+  - shell: "echo SO FAR SO GOOD; id | tee /tmp/playbook"
+    ignore_errors: true
+    register: op
+    become: false
+    #become_user: vagrant
+                      
+  - ansible.builtin.debug: msg="================ RC={{ op.rc }} STDOUT={{ op.stdout }} STDERR={{ op.stderr }}"
+
