@@ -13,9 +13,8 @@ user_private_key_file  = "~/.ssh/labs/lab43_ed25519"
 user_intra_private_key_file = "~/.ssh/labs/intra_ed25519"
 
 ## zip_files         = ["../../FILES/LFD459-student.zip"]
-## trainer_zip_files = ["../../FILES/LFD459-trainer.zip"]
-# NO !! zip_files = ["../../FILES/LFD459-trainer.zip", "", "", ""]
-zip_files = ["../../FILES/LFD459-student.zip", "", "", ""]
+## trainer_zip_files = [ "../../FILES/LFD459-trainer.zip" ]
+zip_files = [ "../../../FILES/LFD459-student.zip" ]
 
 user_data_file = "./scripts/user_data_setup.sh"
 
@@ -29,10 +28,6 @@ node_disk  = [ "16G",  "16G" ]
 node_mem   = [ "6144", "4096" ]
 node_cores = [  4,     2 ]
 node_roles = [ "cp" , "worker" ]
-no_node_playbooks = {
-    "cp":     [ ],
-    "worker": [ ],
-}
 node_playbooks = {
     "cp":     [ "playbooks/playbook.yml", "playbooks/cp_k8s_playbook.yml",     "playbooks/on_off.yml" ],
     "worker": [ "playbooks/playbook.yml", "playbooks/worker_k8s_playbook.yml", "playbooks/on_off.yml" ],
