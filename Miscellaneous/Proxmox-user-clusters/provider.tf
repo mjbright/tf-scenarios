@@ -5,7 +5,12 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "~> 2.9"
+
+      # Try to avoid the "Error: VM 134 already running" bug
+      # See: https://github.com/Telmate/terraform-provider-proxmox/issues/460
+      #version = "~> 2.9"
+      #version = "2.8.0"
+      version = ">= 2.8.0, < 2.8.10"
     }
   }
 }

@@ -3,13 +3,15 @@ locals {
     num_nodes        = length(var.node_names)
     public_key_file  = "${ var.admin_private_key_file }.pub"
 
+    # Extend zip_files list to 4 elements (by appending empty elements)
+    zip_files = slice(concat(var.zip_files, ["","","",""]), 0, 4)
+
     # No auto install:
-    no_node_install_sh = {
-        #"cp":     [ "touch /tmp/cp.installed",     "ls -al /tmp/cp.installed" ],
-        #"worker": [ "touch /tmp/worker.installed", "ls -al /tmp/worker.installed" ],
-        "cp":     [],
-        "worker": [],
-    }
+    no_node_install_sh = { for key, value in var.node_install_sh : key => [] }
+
+    # No playbooks: uncomment to disable playbooks
+    #               (avoids adding enable_playbooks var to module interface)
+    # local.no_node_playbooks  = { for key, value in var.node_playbooks : key => [] }
 }
 
 module cluster {
@@ -27,7 +29,7 @@ module cluster {
     node_mem   = var.node_mem  
 
     node_roles      = var.node_roles
-    #node_playbooks  = var.no_node_playbooks
+    #node_playbooks  = local.no_node_playbooks
     node_playbooks  = var.node_playbooks
     #node_install_sh = var.node_install_sh
     node_install_sh = local.no_node_install_sh
@@ -41,7 +43,7 @@ module cluster {
     admin_private_key_file      = var.admin_private_key_file
     user_intra_private_key_file = var.user_intra_private_key_file
 
-    zip_files      = var.zip_files
+    zip_files      = local.zip_files
     user_data_file = var.user_data_file
 
     pm_target_node = var.pm_nodename

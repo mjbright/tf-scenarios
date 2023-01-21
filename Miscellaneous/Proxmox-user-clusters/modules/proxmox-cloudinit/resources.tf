@@ -23,10 +23,12 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   # Timeout after 2 mins if provider times out ...
   # Deprecated: guest_agent_ready_timeout = 120
   # https://www.terraform.io/docs/language/resources/syntax.html#operation-timeouts
-  timeouts {
-    create = "20m"
-    delete = "2h"
-  }
+
+  # Not present in 2.8.0
+  #timeouts {
+  #  create = "20m"
+  #  delete = "2h"
+  #}
 
   target_node       = var.pm_target_node
 
@@ -49,22 +51,10 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   # Setup keyless login for ubuntu - needed for ansible ...
   provisioner "local-exec" {
     command =<<EOF
-      mkdir -p var
-      [ -f ~/.ssh/known_hosts ] && {
-          ssh-keygen -f ~/.ssh/known_hosts -R ${self.default_ipv4_address}  
-          ssh-keygen -f ~/.ssh/known_hosts -R ${local.node_fqdns[count.index]}
-      } > var/ssh.keygen.${count.index}.op 2>&1
-
-      {
-          ssh-keyscan -t rsa ${self.default_ipv4_address}   
-          ssh-keyscan -t rsa ${local.node_fqdns[count.index]}
-      } >> ~/.ssh/known_hosts 2>var/ssh.keyscan.${count.index}.op
-
-      cat ~/.ssh/known_hosts
-
+      ./wait_on_keyscan.sh ${self.default_ipv4_address} ${local.node_fqdns[count.index]} ${var.cluster_prefix} ${count.index}
       exit 0
       EOF
-  } 
+  }
 
   connection {
     type        = "ssh"
@@ -127,6 +117,30 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
     destination = local.r_public_key_file
   }
 
+  # Setup keyless login for ubuntu - needed for ansible ...
+  provisioner "local-exec" {
+    command =<<EOF
+      mkdir -p var
+      [ -f ~/.ssh/known_hosts ] && {
+          set -x
+          ssh-keygen -f ~/.ssh/known_hosts -R ${self.default_ipv4_address}
+          ssh-keygen -f ~/.ssh/known_hosts -R ${local.node_fqdns[count.index]}
+          set +x
+      } > var/ssh.keygen.${var.cluster_prefix}-${count.index}.op 2>&1
+
+      {
+          set -x
+          ssh-keyscan ${self.default_ipv4_address}
+          ssh-keyscan ${local.node_fqdns[count.index]}
+          #ssh-keyscan -t rsa ${self.default_ipv4_address}
+          #ssh-keyscan -t rsa ${local.node_fqdns[count.index]}
+          set +x
+      } > var/ssh.keyscan.${var.cluster_prefix}-${count.index}.op 2>var/ssh.keyscan.${var.cluster_prefix}-${count.index}.err
+      cat var/ssh.keyscan.${var.cluster_prefix}-${count.index}.op >> ~/.ssh/known_hosts
+      exit 0
+      EOF
+  }
+
   vga {
     type = "qxl,memory=16"
   }
@@ -174,7 +188,7 @@ resource "null_resource" "intra_ssh_setup" {
 
   # Run on all nodes, built previously via count perhaps
   connection {
-    host = "${element( proxmox_vm_qemu.proxmox_vm.*.default_ipv4_address, count.index)}"
+    host        = "${element( proxmox_vm_qemu.proxmox_vm.*.default_ipv4_address, count.index)}"
     user        = var.user
     private_key = file( local.admin_private_key_file )
   }
@@ -202,6 +216,7 @@ resource "null_resource" "intra_ssh_setup" {
        "exit 0"
     ]
   }
+
 }
 
 resource "null_resource" "run_ansible" {
@@ -217,6 +232,7 @@ resource "null_resource" "run_ansible" {
     command = "echo == RUN_ANSIBLE ======================================================="
   }
 
+  #" 2>&1 | stdbuf -oL -eL tee var/ansible.${ var.cluster_prefix }.${ local.distinct_node_roles[ count.index ] }.log"
   provisioner "local-exec" {
     command = ( ( length(var.node_playbooks[ local.distinct_node_roles[ count.index ] ]) != 0 ) ? 
         join("; ", [
@@ -226,7 +242,7 @@ resource "null_resource" "run_ansible" {
             join(" ", [
                  "ansible-playbook -v -i var/ansible_hosts.${ var.cluster_prefix } --limit group_${ local.distinct_node_roles[count.index] }",
                  join(" ", var.node_playbooks[ local.distinct_node_roles[ count.index ] ]),
-                 " ) 2>&1 | stdbuf -oL -eL tee var/ansible.${ var.cluster_prefix }.${ local.distinct_node_roles[ count.index ] }.log" ]),
+                 " ) 2>&1 | tee var/ansible.${ var.cluster_prefix }.${ local.distinct_node_roles[ count.index ] }.log" ]),
           ])
          :
          "echo SKIPPING ansible-playbook for role '${ local.distinct_node_roles[count.index] }'"

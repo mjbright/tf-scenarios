@@ -12,10 +12,6 @@ variable node_roles {
   type = list(string)
 }
 
-variable no_node_playbooks {
-  type = map( list(string) )
-}
-
 variable node_playbooks {
   type = map( list(string) )
 }

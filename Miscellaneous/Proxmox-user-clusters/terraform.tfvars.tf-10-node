@@ -1,0 +1,50 @@
+
+#num_clusters = 10
+#num_clusters = 1
+num_clusters = 10
+
+user = "ubuntu"
+
+admin_private_key_file = "~/.ssh/strigo_nuaware_rsa"
+
+# To be used by ansible:
+user_private_key_file  = "~/.ssh/labs/lab43_ed25519"
+
+user_intra_private_key_file = "~/.ssh/labs/intra_ed25519"
+
+## zip_files         = ["../../FILES/LFD459-student.zip"]
+## trainer_zip_files = ["../../FILES/LFD459-trainer.zip"]
+# NO !! zip_files = ["../../FILES/LFD459-trainer.zip", "", "", ""]
+#zip_files = ["../../FILES/LFD459-student.zip", "", "", ""]
+zip_files = ["../../FILES/TF-student.zip" ]
+
+user_data_file = "./scripts/user_data_setup.sh"
+
+#TEMPLATE   = "TEMPLATE-ubuntu2004-4"
+TEMPLATE    = "TEMPLATE-ubuntu2004-5-qemu-guest-agent"
+
+cluster_prefix = "tf"
+node_names = [ "tf" ]
+node_state = [ "on" ]
+node_disk  = [ "16G" ]
+node_mem   = [ "6144" ]
+node_cores = [  4 ]
+node_roles = [ "tf"  ]
+node_playbooks = {
+    #"tf":     [ "playbooks/playbook.yml", "playbooks/playbook_docker_microk8s" ]
+    "tf":     [ "playbooks/playbook.yml" ]
+}
+
+# Enable auto install:
+node_install_sh = {
+    "tf":     [ ],
+}
+
+vmid_base  = 20130
+ip_base     = "130"
+
+ip_prefix   = "192.168.0"
+gw          = "192.168.0.254"
+
+agent       = 1
+
