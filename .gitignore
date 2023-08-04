@@ -5,7 +5,7 @@ terraform.tfstate*
 **/plan.out
 **/*.tf.*
 **/files/
+**/.DS_Store
 EXCLUDE/
-
 DataSources/list_my_images_details.aws/setup.rc
 lab.Solutions.tointegrate/
