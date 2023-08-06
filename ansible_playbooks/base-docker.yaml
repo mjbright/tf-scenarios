@@ -12,6 +12,7 @@
 #      owner: root
 #      group: root
 
+  tasks:
    - name: "Updating hostnames"
      hostname:
       name: "{{ new_hostname }}"
