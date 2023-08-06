@@ -6,12 +6,6 @@
   - new_user: "student"
     user_mode: "trainer"
 
-  #vars_prompt:
-  # - name: "new_user"
-  #   prompt: "Account need to be create in remote server."
-  #   private: no
-
-
   tasks:
     - ansible.builtin.debug: msg="================ STARTED base.yml ===================="
 
@@ -119,7 +113,7 @@
         group:    student
         owner:    student
         keep_newer: true
-      when: not register_zip.stat.exists
+      #when: not register_zip.stat.exists
       when: false
 
     - name: Touch a file
@@ -135,18 +129,14 @@
         line: export PS1='[AZVM] \u@\h \w# '
         create: yes
 
-    - name: Set PS1 for user ubuntu
+    - name: Set PS1 for users ubuntu,student,vmadmin
       ansible.builtin.lineinfile:
-        path: /home/ubuntu/.bashrc
+        path: "/home/{{ item }}/.bashrc"
         #line: export PS1='[multipass] \u@\h \w> '
         line: export PS1='[AZVM] \u@\h \w> '
         create: yes
-
-    - name: Set PS1 for user student
-      ansible.builtin.lineinfile:
-        path: /home/student/.bashrc
-        #line: export PS1='[multipass] \u@\h \w$ '
-        line: export PS1='[AZVM] \u@\h \w$ '
-        create: yes
-
+      loop_with:
+      - vmadmin
+      - ubuntu
+      - student
 
