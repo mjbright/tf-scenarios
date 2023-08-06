@@ -1,0 +1,152 @@
+---
+- hosts: "all"
+  # Don't become root user (can be overridden on tasks using: become: true)
+  become: yes
+  vars:
+  - new_user: "student"
+    user_mode: "trainer"
+
+  #vars_prompt:
+  # - name: "new_user"
+  #   prompt: "Account need to be create in remote server."
+  #   private: no
+
+
+  tasks:
+    - ansible.builtin.debug: msg="================ STARTED base.yml ===================="
+
+    - name: creating the user {{ new_user }}.
+      user:
+        name: "{{ new_user }}"
+        createhome: yes
+        shell: /bin/bash
+        #append: yes
+        append: no
+        state: present  
+
+    - name: Create a dedicated sudo entry file for the user.
+      file:
+        path: "/etc/sudoers.d/{{ new_user }}"
+        state: touch
+        mode: '0600'
+        
+    - name: "Setting up Sudo without Password for user {{ new_user }}."
+      lineinfile:
+        dest: "/etc/sudoers.d/{{ new_user }}"
+        line: '{{ new_user }}  ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Set authorized key for user copying it from current {{ new_user }}  user.
+      authorized_key:
+         user: "{{ new_user }}"
+         state: present
+         key: "{{ lookup('file', '/home/student/.ssh/test_rsa.pub') }}"
+         # ?? fails ?? key: "lookup('file', '{{ priv_key }}.pub')"
+                 #lookup('file', '/home/student/.ssh/test_rsa.pub')
+
+    - name: Print the created user.
+      shell: id "{{ new_user }}"
+      register: new_user_created
+    - debug:
+        msg: "{{ new_user_created.stdout_lines[0] }}"
+    
+    - name: Remove Docker packages
+      apt:
+        name: docker-ce docker-ce-cli containerd.io
+        state: absent
+        purge: yes
+
+    - name: Remove Docker directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/docker
+        - /var/lib/docker
+        - /var/run/docker.sock
+
+    - name: Remove containerd packages
+      apt:
+        name: containerd
+        state: absent
+        purge: yes
+
+    - name: Remove containerd directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/containerd
+        - /var/lib/containerd
+        
+    - name: Install utilities
+      apt:
+        update_cache: true
+        name:
+        - unzip
+        - tmux
+        - jq
+        - vim
+        state: present
+        
+    - name: "Update cache & Full system update"
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+        force_apt_get: true
+
+    - name: "Transfer zip file - /tmp/{{ user_mode }}.zip"
+      become:     true
+      #become_user:     student
+      ansible.builtin.copy:
+        src:      "{{ lookup('env','HOME') }}/tmp/TRAININGS.SETUP/LFD459-{{ user_mode }}.zip"
+        dest:     /tmp/{{ user_mode }}.zip
+        mode:     0700 
+      when: false
+  
+    - name: Task name
+      stat:
+        path: /tmp/.{{ user_mode }}.zip
+      register: register_zip
+      when: false
+
+    - name: "Unpack zip file - /tmp/{{ user_mode }}.zip"
+      become:     true
+      ansible.builtin.unarchive:
+        copy:     false
+        src:      /tmp/{{ user_mode }}.zip
+        dest:     /
+        group:    student
+        owner:    student
+        keep_newer: true
+      when: not register_zip.stat.exists
+      when: false
+
+    - name: Touch a file
+      ansible.builtin.file:
+        path: /tmp/.{{ user_mode }}.zip
+        state: touch
+      when: false
+
+    - name: Set PS1 for user root
+      ansible.builtin.lineinfile:
+        path: /root/.bashrc
+        #line: export PS1='[multipass] \u@\h \w# '
+        line: export PS1='[AZVM] \u@\h \w# '
+        create: yes
+
+    - name: Set PS1 for user ubuntu
+      ansible.builtin.lineinfile:
+        path: /home/ubuntu/.bashrc
+        #line: export PS1='[multipass] \u@\h \w> '
+        line: export PS1='[AZVM] \u@\h \w> '
+        create: yes
+
+    - name: Set PS1 for user student
+      ansible.builtin.lineinfile:
+        path: /home/student/.bashrc
+        #line: export PS1='[multipass] \u@\h \w$ '
+        line: export PS1='[AZVM] \u@\h \w$ '
+        create: yes
+
+

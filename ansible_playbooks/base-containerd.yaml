@@ -1,0 +1,91 @@
+---
+- hosts: "all"
+  #remote_user: ansible
+  become: yes
+  #become_method: sudo
+  #become_user: root
+  gather_facts: yes
+  connection: ssh
+  
+  tasks:
+   - name: Copying the host file
+     copy:
+      src: /etc/hosts
+      dest: /etc/hosts
+      owner: root
+      group: root
+
+   - name: "Updating hostnames"
+     hostname:
+      name: "{{ new_hostname }}"
+
+   - name: Create a empty file for containerd module.
+     copy:
+       content: ""
+       dest: /etc/modules-load.d/containerd.conf
+       force: no
+
+   - name: Configure module for containerd.
+     blockinfile:
+       path: /etc/modules-load.d/containerd.conf 
+       block: |
+            overlay
+            br_netfilter
+
+   #- name: Load modules (without need for reboot)
+   #  command: modprobe -c -C /etc/modules-load.d/containerd.conf | tee ~/tmp/containerd.conf.op
+
+   - name: Load modules (without need for reboot)
+     ansible.builtin.shell: |
+       mkdir ~/tmp/
+       modprobe -c -C /etc/modules-load.d/containerd.conf 2>&1 | tee ~/tmp/containerd.conf.op
+       modprobe overlay
+       modprobe br_netfilter
+
+   - name: Installing Prerequisites for Kubernetes
+     apt: 
+       name:
+         - apt-transport-https
+         - ca-certificates
+         - curl
+         - gnupg-agent
+         - vim
+         - software-properties-common
+       state: present
+
+   - name: Setting up gpg key+sources list for containterd install
+     ansible.builtin.shell:  |
+         sudo install -m 0755 -d /etc/apt/keyrings
+         [ ! -f /etc/apt/keyrings/docker.gpg ] && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+         sudo chmod a+r /etc/apt/keyrings/docker.gpg
+         #cat /etc/apt/sources.list.d/docker.list
+         echo deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+         cat /etc/apt/sources.list.d/docker.list
+         sudo apt-get update
+     ignore_errors: true
+
+   - name: Install containerd.
+     apt: 
+       name:
+         - containerd.io
+       state: present
+
+   - name: Configure containerd.
+     file:
+       path: /etc/containerd
+       state: directory
+
+   # Following advice here: https://forum.linuxfoundation.org/discussion/862825/kubeadm-init-error-cri-v1-runtime-api-is-not-implemented
+   - name: Update containerd config
+     become: true
+     ansible.builtin.shell: |
+       rm /etc/containerd/config.toml
+       systemctl restart containerd
+     when: true
+
+   - name: Add Google official GPG key
+     apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+

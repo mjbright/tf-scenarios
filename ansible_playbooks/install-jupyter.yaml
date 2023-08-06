@@ -1,0 +1,69 @@
+
+---
+- hosts: jupyter
+  become: true
+
+  tasks:
+
+  #- ansible.builtin.debug: msg="================ Start trainer_tf-aws_playbook.yml ===================="
+  - ansible.builtin.debug: msg="================ Start install-jupyter.yml ===================="
+
+  - name: Install packages - python3, pip,venv, unzip
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+      lock_timeout: 1200
+    vars:
+      packages:
+      - python3
+      - unzip
+      - python3-pip
+      - python3-venv
+
+  - name: Install packages - for Pandoc (to enable PDF output)
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+      lock_timeout: 1200
+    vars:
+      packages:
+      - texlive
+      - texlive-xetex
+      - texlive-latex-extra
+      - pandoc
+
+  - name: Install JupyterLab, Pandoc, RISE, JupyText
+    become_user: student
+    #become_method: su
+    #command: bash -c 'mkdir -p ~/bin; grep -q PS1 .bashrc || echo "PS1='\\u@{{ inventory_hostname }} \\w> '" >> .bashrc; grep awsrc .bashrc || echo "source ~/.awsrc"'
+    ansible.builtin.shell: |
+      ls -al /home/student/scripts/install_jupyter.sh
+      /home/student/scripts/install_jupyter.sh
+
+      . /home/student/.venv/TRAINING/bin/activate
+      # pip install jupytext
+      # pip install myst-parser jupytext jupyterlab jupyterlab_myst
+      pip install myst-parser jupytext jupyterlab jupyterlab_myst pandoc RISE jupyterlab_rise
+
+    args:
+      executable: /bin/bash
+
+  - name: Start Jupyter
+    become_user: student
+    #become_method: su
+    #command: bash -c 'mkdir -p ~/bin; grep -q PS1 .bashrc || echo "PS1='\\u@{{ inventory_hostname }} \\w> '" >> .bashrc; grep awsrc .bashrc || echo "source ~/.awsrc"'
+    ansible.builtin.shell: |
+      ls -al /home/student/scripts/*_jupyter.sh
+
+      bash -x /home/student/scripts/start_jupyter.sh
+
+      echo; echo
+      /home/student/.venv/TRAINING/bin/jupyter-notebook list
+    ignore_errors: true
+    register: op
+    args:
+      executable: /bin/bash
+
+  - ansible.builtin.debug: msg="================ RC={{ op.rc }} STDOUT={{ op.stdout }} STDERR={{ op.stderr }}"

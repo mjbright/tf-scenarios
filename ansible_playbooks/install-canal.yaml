@@ -1,0 +1,16 @@
+---
+- hosts: master
+  #remote_user: ansible
+  become: yes
+  #become_method: sudo
+  #become_user: root
+  gather_facts: yes
+  connection: ssh
+  tasks:
+
+  - name: Pulling images required for setting up a Kubernetes cluster
+    shell: |
+      #wget -O ~/canal.yaml https://raw.githubusercontent.com/projectcalico/canal/v3.25.1/manifests/canal.yaml
+      wget -O canal.yaml https://raw.githubusercontent.com/projectcalico/canal/v3.25.1/manifests/canal.yaml
+      kubectl apply -f canal.yaml
+

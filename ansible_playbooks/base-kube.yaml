@@ -1,0 +1,102 @@
+---
+- hosts: "all"
+  #remote_user: ansible
+  become: yes
+  #become_method: sudo
+  #become_user: root
+  gather_facts: yes
+  connection: ssh
+  
+  tasks:
+   - name: Copying the host file
+     copy:
+      src: /etc/hosts
+      dest: /etc/hosts
+      owner: root
+      group: root
+
+   - name: "Updating hostnames"
+     hostname:
+      name: "{{ new_hostname }}"
+
+   - name: Make the Swap inactive
+     command: swapoff -a
+
+   - name: Remove Swap entry from /etc/fstab.
+     lineinfile:
+       dest: /etc/fstab
+       regexp: swap
+       state: absent
+
+   - name: Create a empty file for kubernetes sysctl params.
+     copy:
+       content: ""
+       dest: /etc/sysctl.d/99-kubernetes-cri.conf
+       force: no
+
+   - name: Configure sysctl params for Kubernetes.
+     lineinfile:
+       path: /etc/sysctl.d/99-kubernetes-cri.conf 
+       line: "{{ item }}"
+     with_items:
+       - 'net.bridge.bridge-nf-call-iptables  = 1'
+       - 'net.ipv4.ip_forward                 = 1'
+       - 'net.bridge.bridge-nf-call-ip6tables = 1'
+
+   - name: Apply sysctl params without reboot.
+     command: sysctl --system
+
+   - name: Apply sysctl params without reboot.
+     command: sysctl --load /etc/sysctl.d/99-kubernetes-cri.conf 
+
+   - name: Installing Prerequisites for Kubernetes
+     apt: 
+       name:
+         - apt-transport-https
+         - ca-certificates
+         - curl
+         - gnupg-agent
+         - vim
+         - software-properties-common
+       state: present
+
+   # Following advice here: https://forum.linuxfoundation.org/discussion/862825/kubeadm-init-error-cri-v1-runtime-api-is-not-implemented
+   - name: Update containerd config
+     become: true
+     ansible.builtin.shell: |
+       rm /etc/containerd/config.toml
+       systemctl restart containerd
+     when: true
+
+   - name: Add Google official GPG key
+     apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+
+   - name: Add Kubernetes Repository
+     apt_repository:
+       repo: deb http://apt.kubernetes.io/ kubernetes-xenial main 
+       state: present
+       filename: kubernetes
+       mode: 0600
+
+   - name: "Update cache & Full system update"
+     apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+        force_apt_get: true
+
+   - name: Installing Kubernetes Cluster Packages.
+     apt: 
+       name:
+         - kubeadm
+         - kubectl
+         - kubelet
+       state: present
+
+   - name: Enable service kubelet, and enable persistently
+     service: 
+       name: kubelet
+       enabled: yes
+

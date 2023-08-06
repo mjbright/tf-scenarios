@@ -1,0 +1,37 @@
+
+- hosts: "all"
+  become: no
+  gather_facts: no
+  tasks:
+    - ansible.builtin.debug:
+        msg: "================ Installing BASE ================"
+    - ansible.builtin.include_vars: vars.yaml
+
+- name: Include base play
+  ansible.builtin.import_playbook: base.yaml
+
+- hosts: "all"
+  become: no
+  gather_facts: no
+  tasks:
+    - ansible.builtin.debug:
+        msg: "================ Installed  BASE ================"
+
+- hosts: "all"
+  become: no
+  gather_facts: no
+  tasks:
+    - ansible.builtin.debug:
+        msg: "================ Installing Docker ================"
+
+- name: Include docker play
+  ansible.builtin.import_playbook: base-docker.yaml
+
+- hosts: "all"
+  become: no
+  gather_facts: no
+  tasks:
+    - ansible.builtin.debug:
+        msg: "================ Installed  Docker ================"
+
+  

@@ -1,0 +1,16 @@
+---
+- hosts: master
+  #remote_user: ansible
+  become: yes
+  #become_method: sudo
+  #become_user: root
+  gather_facts: yes
+  connection: ssh
+  tasks:
+
+  - name: Pulling images required for setting up a Kubernetes cluster
+    shell: |
+      #wget -O ~/calico.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/calico.yaml
+      wget -O calico.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/calico.yaml
+      kubectl apply -f calico.yaml
+
