@@ -4,24 +4,17 @@
   gather_facts: yes
   connection: ssh
   
-  tasks:
-   - name: Copying the host file
-     copy:
-      src: /etc/hosts
-      dest: /etc/hosts
-      owner: root
-      group: root
+#  tasks:
+#   - name: Copying the host file
+#     copy:
+#      src: /etc/hosts
+#      dest: /etc/hosts
+#      owner: root
+#      group: root
 
    - name: "Updating hostnames"
      hostname:
       name: "{{ new_hostname }}"
-
-   - name: Configure module for containerd.
-     blockinfile:
-       path: /etc/modules-load.d/containerd.conf 
-       block: |
-            overlay
-            br_netfilter
 
    - name: Installing Prerequisites for Docker
      apt: 
@@ -50,9 +43,11 @@
        name:
          - docker-ce
          - docker-ce-cli
-         - containerd.io
        state: present
 
    - name: Enabling user access to Docker
-     command: usermod -aG docker vmadmin
-
+     command: "usermod -aG docker {{ item }}"
+     loop_with:
+     - vmadmin
+     - ubuntu
+     - student
