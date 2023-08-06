@@ -50,5 +50,5 @@
      command: "usermod -aG docker {{ item }}"
      loop:
        - vmadmin
-       - ubuntu
+       #- ubuntu
        - student
