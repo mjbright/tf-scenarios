@@ -135,8 +135,8 @@
         #line: export PS1='[multipass] \u@\h \w> '
         line: export PS1='[AZVM] \u@\h \w> '
         create: yes
-      loop_with:
-      - vmadmin
-      - ubuntu
-      - student
+      loop:
+        - vmadmin
+        - ubuntu
+        - student
 

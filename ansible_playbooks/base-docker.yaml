@@ -47,7 +47,7 @@
 
    - name: Enabling user access to Docker
      command: "usermod -aG docker {{ item }}"
-     loop_with:
-     - vmadmin
-     - ubuntu
-     - student
+     loop:
+       - vmadmin
+       - ubuntu
+       - student
