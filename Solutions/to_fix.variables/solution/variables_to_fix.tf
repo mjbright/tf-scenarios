@@ -29,16 +29,16 @@ variable t6 {
     default = [ true, false, true ]
 }
 
-# All values coerced to string:
+# Either - remove the "a" entry (1 cannot be coerced to bool) or replace value by true or false
 variable t7 {
-    type = map(string)
-    default = { "a": 1, "b": true, "c": "3" }
+    type = map(bool)
+    default = { "a": true, "b": true, "c": "false" }
 }
 
-# All values coerced to string:
+# Either - remove the "b" entry (true cannot be coerced to number) or replace value by some number
 variable t7b {
-    type = map(any)
-    default = { "a": 21, "b": true, "c": "23" }
+    type = map(number)
+    default = { "a": 21, "b": 101, "c": "23" }
 }
 
 variable t8 {
