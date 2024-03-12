@@ -30,12 +30,12 @@ variable t6 {
 }
 
 variable t7 {
-    type = map(string)
-    default = { "a": 1, "b": true, "c": "3" }
+    type = map(bool)
+    default = { "a": 1, "b": true, "c": "false" }
 }
 
 variable t7b {
-    type = map(any)
+    type = map(number)
     default = { "a": 21, "b": true, "c": "23" }
 }
 
