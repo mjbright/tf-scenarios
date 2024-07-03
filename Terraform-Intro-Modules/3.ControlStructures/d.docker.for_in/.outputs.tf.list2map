@@ -1,0 +1,18 @@
+
+locals {
+    vms_names = keys( var.vms )
+
+}
+
+## -- List -> Map  transformations: -----------------------------
+
+output list2map {
+    value = { for idx, elem in [ "vm3", "vm4" ] :
+                  elem => upper(elem) }
+}
+
+output list2map_filter {
+    value = { for idx, elem in local.vms_names :
+                  elem => upper(elem) if elem == "vm1" }
+}
+

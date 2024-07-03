@@ -1,0 +1,43 @@
+
+locals {
+    vms_names = keys( var.vms )
+
+}
+
+## -- List -> List transformations: -----------------------------
+
+output list2list_upper {
+    # Transformation, List -> List: List of vm names converted to uppercase
+
+    value = [ for elem in local.vms_names :
+                  upper(elem) ]
+}
+
+output list2list_index {
+    # Transformation, List -> List: Indexed list of vm names
+
+    value = [ for idx, elem in local.vms_names :
+                  format("%d: %s", idx, elem) ]
+}
+
+output list2list_reverse_idx {
+    # Transformation, List -> List: (Reversed) Indexed list of vm names
+
+    value = [ for idx, elem in reverse( local.vms_names ) :
+                  format("%d: %s", idx, elem) ]
+}
+
+output list2list_upper_filter {
+    # Transformation & filtering List -> List: Indexed list of vm names (for idx > 2):
+
+    value = [ for idx, elem in local.vms_names :
+                  upper(elem) if idx > 2 ]
+}
+
+output list2list_upper_cond {
+    # Transformation & filtering List -> List: Indexed list of vm names (for idx > 2):
+
+    value = [ for idx, elem in local.vms_names :
+                  idx > 2 ? upper(elem) : elem ]
+}
+
