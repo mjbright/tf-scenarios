@@ -1,0 +1,16 @@
+
+resource docker_image k8s-demo {
+  name = "mjbright/k8s-demo:1"
+}
+
+resource docker_container test1 {
+    image = docker_image.k8s-demo.image_id
+    name  = "test-1"
+}
+
+resource docker_container test2 {
+    image = docker_image.k8s-demo.image_id
+    name  = "test-2"
+}
+
+
