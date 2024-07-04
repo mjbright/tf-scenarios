@@ -1,6 +1,10 @@
 
 Description: 
 
+Use cases:
+- conditionally set an attribute
+- conditionally set a count attribute, thus determining how many, if any, resources to create
+
 It demonstrates
 - Use of ternary operator to conditionally set an attribute in a resource
 - Use of ternary operator to conditionally set the count value for a set of resources

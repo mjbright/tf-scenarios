@@ -1,6 +1,10 @@
 
 Description: Demonstrate the use of dynamic blocks to prevent the repetition of blocks within a resource
 
+Use cases:
+- avoid repeating block structures within a resource
+- also allows for more dynamic (e.g. variable based) creation of block instances
+
 Steps
 - terraform init
 - terraform apply # Observe that 5 VMs are created

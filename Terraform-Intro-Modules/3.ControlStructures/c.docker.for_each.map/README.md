@@ -1,6 +1,9 @@
 
 Description: Demonstrate use of for_each / compare with use of count
 
+Use cases:
+- Creation of multiple resources: based on a map or set variable
+
 It demonstrates
 - Use for_each token to create multiple resource instances based on a map (or set) variable
 - Demonstrates the problem with using count, if we delete an element of the list (all following elements are recreated)
