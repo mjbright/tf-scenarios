@@ -7,7 +7,7 @@ locals {
 }
 
 resource local_file report_info {
-    filename = "./results.txt"
+    filename = "./report_op.txt"
     content  = local.report_info
 }
 
