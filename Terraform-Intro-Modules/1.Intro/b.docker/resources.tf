@@ -24,7 +24,9 @@ variable "ext_port" {
 # Note: the name image1 will be used by Terraform to refer to this resource as docker_image.image1
 
 resource "docker_image" "image1" {
-  name = var.image
+  name         = var.image
+
+  force_remove = false
 }
 
 # -------- Container definitions:

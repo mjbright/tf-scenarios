@@ -1,12 +1,15 @@
 
 resource docker_image tier1 {
     name  = var.tier1["image"]
+  force_remove = false
 }
 resource docker_image tier2 {
     name  = var.tier2["image"]
+  force_remove = false
 }
 resource docker_image tier3 {
     name  = var.tier3["image"]
+  force_remove = false
 }
 
 resource docker_container tier1 {

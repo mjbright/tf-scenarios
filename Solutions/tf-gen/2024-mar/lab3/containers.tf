@@ -2,25 +2,32 @@
 # -------- Image definitions (will pull images):
 resource "docker_image" "haproxy" {
   name = "haproxytech/haproxy-alpine"
+  force_remove = false
 }
 
 resource "docker_image" "k8sdemo1" {
   name = "mjbright/k8s-demo:alpine1"
+  force_remove = false
 }
 resource "docker_image" "k8sdemo2" {
   name = "mjbright/k8s-demo:alpine2"
+  force_remove = false
 }
 resource "docker_image" "k8sdemo3" {
   name = "mjbright/k8s-demo:alpine3"
+  force_remove = false
 }
 resource "docker_image" "k8sdemo4" {
   name = "mjbright/k8s-demo:alpine4"
+  force_remove = false
 }
 resource "docker_image" "k8sdemo5" {
   name = "mjbright/k8s-demo:alpine5"
+  force_remove = false
 }
 resource "docker_image" "k8sdemo6" {
   name = "mjbright/k8s-demo:alpine6"
+  force_remove = false
 }
 
 # -------- Container definitions:

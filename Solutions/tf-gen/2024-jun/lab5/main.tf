@@ -19,6 +19,7 @@ resource "docker_network" "app_network" {
 resource "docker_image" "nginx" {
   name         = "nginx"
   keep_locally = false
+  force_remove = false
 }
 
 resource "docker_container" "nginx" {

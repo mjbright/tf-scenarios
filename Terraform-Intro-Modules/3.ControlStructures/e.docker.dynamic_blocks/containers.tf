@@ -64,6 +64,7 @@ variable vms {
 
 resource docker_image k8s-demo {
   name = "mjbright/k8s-demo:1"
+  force_remove = false
 }
 
 resource docker_container test {

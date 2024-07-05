@@ -2,6 +2,7 @@
 # Pulls the image
 resource "docker_image" "demo-image" {
   name = var.image_name
+  force_remove = false
 }
 
 # Create a container

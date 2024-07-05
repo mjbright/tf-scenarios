@@ -17,6 +17,7 @@ variable default_name {
 
 resource docker_image k8s-demo {
     name = "mjbright/k8s-demo:1"
+  force_remove = false
 }
 
 # Create a random string of length 8 lower case characters iff var.container_use_random_name is true:
