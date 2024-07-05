@@ -1,5 +1,9 @@
+
+Congratulations you've just created ${ length( keys( vms ) ) } Virtual Machines
+=================================================================================
+
 %{~ for idx, name in keys( vms ) }
-${ idx }: VM Name: '${ name }' -   FQDN: ${ vm_infos[name]["hostname"] }   Private IP address: ${ vm_infos[name]["network_data"][0]["ip_address"] }
+${ idx + 1 }. VM Name: '${ name }' -   FQDN: ${ vm_infos[name]["hostname"] }   Private IP address: ${ vm_infos[name]["network_data"][0]["ip_address"] }
           start command: '${ join(" ", vm_infos[name]["command"] ) }'
 %{~ endfor }
 
