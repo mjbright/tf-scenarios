@@ -3,7 +3,8 @@
 
 resource "docker_image" "image1" {
   name = var.image
-  force_remove = false
+
+  keep_locally = true
 }
 
 # -------- Container definitions:
