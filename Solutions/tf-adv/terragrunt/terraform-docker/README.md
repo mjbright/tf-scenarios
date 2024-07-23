@@ -10,6 +10,7 @@ Both configs use
 - the be-container-servers module to create the backend servers
 - the fe-container-lb module to create the load-balancer and configure it to send traffic to the backend
 
+```
 modules/
 ├── be-container-servers
 │   ├── containers.tf
@@ -24,6 +25,7 @@ modules/
     ├── templates
     │   └── haproxy.cfg.tpl
     └── variables.tf
+```
 
 # 1.single-env
 
