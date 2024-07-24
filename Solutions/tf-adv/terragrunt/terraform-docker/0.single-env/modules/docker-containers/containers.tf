@@ -16,8 +16,8 @@ resource docker_container c {
                  docker_image.image[0].image_id :
                  docker_image.image[ count.index ].image_id
              )
-  name     = "${ var.container_name_prefix }${ count.index }"
-  hostname = "${ var.container_name_prefix }${ count.index }"
+  name     = "${ var.container_name_prefix }-${ count.index }"
+  hostname = "${ var.container_name_prefix }-${ count.index }"
 
   dynamic networks_advanced {
     for_each = ( var.network_name == null ? {} : { "${ var.network_name }": true } )

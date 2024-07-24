@@ -17,8 +17,8 @@ resource docker_container c {
                  # Allow wrap around on list of image names:
                  element( docker_image.image,  count.index ).image_id
              )
-  name     = "${ var.container_name_prefix }${ count.index }"
-  hostname = "${ var.container_name_prefix }${ count.index }"
+  name     = "${ var.container_name_prefix }-${ count.index }"
+  hostname = "${ var.container_name_prefix }-${ count.index }"
 
   depends_on = [ docker_network.app_network ]
 
