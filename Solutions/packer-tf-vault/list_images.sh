@@ -4,6 +4,10 @@
 
 JQ_TABLE() {
     jq -rc  '["ImageId","Name","CreationDate"], (.Images[] | [.ImageId, .Name, .CreationDate]) | @tsv' | column -ts $'\t'
+	    #sort_by(.CreationDate) |
+    #jq -rc  '["ImageId","Name","CreationDate"], (.Images[] | sort() | [.ImageId, .Name, .CreationDate]) | @tsv' | column -ts $'\t'
+    # SORTS COLUMNS !! jq -rc  '["ImageId","Name","CreationDate"], (.Images[] | [.ImageId, .Name, .CreationDate] | sort) | @tsv' | column -ts $'\t'
+    #jq -rc  '["ImageId","Name","CreationDate"], (.Images[] | [.ImageId, .Name, .CreationDate] | sort_by(.CreationDate)) | @tsv' | column -ts $'\t'
 }
 
 # Set REGION:
