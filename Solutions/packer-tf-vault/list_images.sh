@@ -6,7 +6,9 @@ JQ_TABLE() {
     jq -rc  '["ImageId","Name","CreationDate"], (.Images[] | [.ImageId, .Name, .CreationDate]) | @tsv' | column -ts $'\t'
 }
 
+# Set REGION:
 REGION="us-east-1"
+[ ! -z "$AWS_DEFAULT_REGION" ] && REGION="$AWS_DEFAULT_REGION"
 [ "$1" = "-r" ] && { shift; REGION=$1; shift; }
 
 echo "Listing user images in region $REGION:"
