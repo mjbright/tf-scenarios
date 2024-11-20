@@ -7,5 +7,13 @@ aws kms encrypt --key-id $KEY --plaintext fileb://secret.yaml \
 
 #  aws kms list-keys | jq -r '.Keys[].KeyId'
 
+terraform apply
+
+# https://developer.hashicorp.com/terraform/language/functions/nonsensitive
+
+# To force secret output:
+terraform output -raw secret
+
+
 
 
