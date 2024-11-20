@@ -1,0 +1,55 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US
+  keyboard:
+    layout: us
+  ssh:
+    install-server: true
+    allow-pw: true
+    disable_root: true
+    ssh_quiet_keygen: true
+    allow_public_ssh_keys: true
+  packages:
+    - qemu-guest-agent
+    - sudo
+    - btop
+    - tmux
+    - vim
+    - evince
+    - xfce4
+    - xfce4-terminal
+    - tightvncserver
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  user-data:
+    package_upgrade: false
+    timezone: America/Chicago
+    users:
+      # NOTE: Can create sha516 password using ~/scripts/mkpass.py
+      # see: https://unix.stackexchange.com/questions/52108/how-to-create-sha512-password-hashes-on-command-line
+      - name: ubuntu
+        #  sha512/salted literal 'ubuntu' as password:
+        #   passwd: "$6$rounds=4096$4SY5kMDOITTy3R6s$vgp01IwfMWJRYxY1pa.D6xS.TEzGkMpVqxZtxPQrYuHzvywq2sSw/Z.yEmG3hsWnERCorBbN7tdMttVTcj4u61"
+        groups: [adm, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        # Must correspond to ssh_private_key_file contents in ubuntu.pkr.hcl:
+        ssh_authorized_keys: 
+          # packer key
+          - ssh-ed25519 REDACTED packer.pub
+          - ssh-ed25519 REDACTED admin.pub
+      - name: student
+        groups: [users]
+        lock-passwd: false
+        #sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        ssh_authorized_keys: 
+          - ssh-ed25519 REDACTED mjb@NUC3
+          - ssh-ed25519 REDACTED mjb@NUC3_intra_ed25519
+          - ssh-ed25519 REDACTED lab43_ed25519.pub
+
