@@ -13,6 +13,7 @@ terraform apply
 
 # To force secret output:
 terraform output -raw secret
+terraform output -json
 
 
 
