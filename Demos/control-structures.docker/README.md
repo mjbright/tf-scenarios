@@ -28,13 +28,17 @@ Extended to create multiple containers & images from a single resource block (on
 
 ### 6.containers.for_in
 
-TBD
+Building up output values using the 'for in' construct
 
 ### 7.containers.string_template
 
-TBD
+Building up strings from a template
+- used to create an output
+- used to create a local string, then written to a local_file resource
 
 ### 8.containers.dynamic_block
 
-TBD
+Example of repeating a block within a resource (the "networks_advanced" attribute block of "docker_container" resources")
+
+Use of for_each
 
