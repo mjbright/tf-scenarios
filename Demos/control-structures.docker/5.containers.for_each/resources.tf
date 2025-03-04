@@ -2,7 +2,6 @@
 # -------- Image definitions (will pull images):
 
 resource "docker_image" "image1" {
-  # type = list(string)
   count = length( var.images )
 
   name         = var.images[ count.index ]
@@ -33,6 +32,8 @@ resource "docker_container" "demo1" {
 
 
 variable containers {
+  # type = map(list(number))
+
   default = {
     # name: [ image_idx, port_increment ]
     "c1": [ 0, 10 ],

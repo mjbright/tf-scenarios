@@ -2,7 +2,6 @@
 # -------- Image definitions (will pull images):
 
 resource "docker_image" "image1" {
-  # type = list(string)
   count = length( var.images )
 
   name         = var.images[ count.index ]
