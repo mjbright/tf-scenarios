@@ -19,29 +19,19 @@ resource docker_container c {
   name     = "${ var.container_name_prefix }-${ count.index }"
   hostname = "${ var.container_name_prefix }-${ count.index }"
 
-  depends_on = [ docker_network.app_network ]
-
-  ports {
-    internal = 80
-    external = 8000 + count.index
-  }
-
   dynamic networks_advanced {
-    for_each = var.networks
+    for_each = ( var.network_name == null ? {} : { "${ var.network_name }": true } )
+    #for_each = toset( var.test )
 
     content {
-      name    = networks_advanced.key
+      name = networks_advanced.key
       aliases = [ networks_advanced.key ]
     }
   }
 
-  dynamic ports {
-    for_each = var.networks
-
-    content {
-      internal = 80
-      external = ports.value["base_port"] + count.index
-    }
+  ports {
+    internal = 80
+    external = 8000 + count.index
   }
 }
 

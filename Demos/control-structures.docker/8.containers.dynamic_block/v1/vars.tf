@@ -1,8 +1,8 @@
 
-variable networks {
-    type        = map
-    description = "Multiple bridge network details"
-    default     = {}
+variable network_name {
+    type        = string
+    description = "Set name to create new bridge network - else use default"
+    default     = null
 }
 
 variable image_names {

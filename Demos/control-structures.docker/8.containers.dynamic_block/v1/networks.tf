@@ -1,8 +1,6 @@
 
 resource "docker_network" "app_network" {
-  for_each = var.networks
-
-  name   = each.key
+  name   = var.network_name
   driver = "bridge"
 }
 
